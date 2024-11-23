@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Aliases : https://laravel.com/docs/11.x/middleware#middleware-aliases
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckUserRole::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
