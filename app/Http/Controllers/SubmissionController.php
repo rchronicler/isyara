@@ -111,4 +111,11 @@ class SubmissionController extends Controller
         }
         return redirect()->route('submissions.index');
     }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $submissions = Submission::where('title', 'like', "%$search%")->get();
+        return view('detail', compact('submissions'));
+    }
 }
