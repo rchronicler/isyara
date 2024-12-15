@@ -15,6 +15,33 @@ window.validateFileSize = validateFileSize;
 
 // For the category guide accordion
 window.addEventListener('DOMContentLoaded', () => {
+
+    const submissionItems = document.querySelectorAll('.submission-item');
+    const spotlightIframe = document.getElementById('spotlight-iframe');
+    const spotlightTitle = document.getElementById('spotlight-title');
+    const spotlightDescription = document.getElementById('spotlight-description');
+    const spotlightUser = document.getElementById('spotlight-user');
+
+    submissionItems.forEach(item => {
+        item.addEventListener('click', function () {
+            // Update iframe source
+            spotlightIframe.src = this.dataset.videoUrl;
+
+            // Update title
+            spotlightTitle.textContent = this.dataset.title;
+
+            // Update description
+            spotlightDescription.textContent = this.dataset.description;
+
+            // Update category and user
+            const categorySpan = spotlightUser.previousElementSibling;
+            categorySpan.textContent = this.dataset.category;
+            spotlightUser.textContent = this.dataset.user;
+
+            // Optional: Scroll to top of spotlight
+            document.getElementById('spotlight-submission').scrollIntoView({behavior: 'smooth'});
+        });
+    });
     // Accordion
     const accordionToggle = document.getElementById('accordion-toggle');
     const accordionArrow = document.getElementById('accordion-arrow');

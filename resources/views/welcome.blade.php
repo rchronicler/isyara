@@ -1,36 +1,12 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Isyara</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
-    <!-- Styles / Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="font-sans antialiased bg-white min-h-screen">
-<header class="shadow py-4 px-4">
-    <div class="max-w-7xl mx-auto">
-        @include('layouts.home-navigation')
-    </div>
-</header>
-<!-- Page Content -->
-<main class="px-4">
-    <section class="max-w-7xl mx-auto py-10 hidden sm:flex items-center relative">
-        <!-- Background Image -->
-        <div class="w-2/3 ">
+<x-home>
+   <section class="max-w-7xl mx-auto py-10 flex items-center relative">
+        <!-- Background Image for larger screens -->
+        <div class="hidden sm:block w-2/3">
             <img src="{{ Storage::url('images/sign-language-pict.jpg') }}" alt="Sign Language"
                  class="w-full h-auto object-cover rounded-lg shadow-lg">
         </div>
         <!-- Overlay Text -->
-        <div
-            class="absolute top-1/2 right-56 transform -translate-y-1/2 translate-x-1/4 bg-teal-800 text-white p-6 rounded-lg shadow-lg max-w-sm h-[230px]">
+        <div class="sm:absolute sm:top-1/2 sm:right-56 sm:transform sm:-translate-y-1/2 sm:translate-x-1/4 bg-teal-800 text-white p-6 rounded-lg shadow-lg max-w-sm h-[230px] mx-auto sm:mx-0">
             <h1 class="text-4xl font-bold mb-4">Website Pembelajaran Bahasa Isyarat</h1>
             <p class="text-sm">Pelajari bahasa isyarat Indonesia melalui video interaktif</p>
         </div>
@@ -81,7 +57,8 @@
                     @foreach($categories as $category)
                         <a href="{{ url('/learn/categories/' . $category->category_id) }}"
                            class="flex-none w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[280px] bg-gray-100 rounded-lg p-6 flex flex-col items-center snap-start transition-transform duration-200 hover:scale-105">
-                            <div class="w-full h-48 bg-gray-300 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                            <div
+                                class="w-full h-48 bg-gray-300 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                                 <img src="{{ $category->img_url }}"
                                      class="w-full h-full object-cover"
                                      alt="{{ $category->category_name }}">
@@ -101,43 +78,4 @@
             </div>
         </div>
     </section>
-</main>
-
-<footer class="bg-teal-800 text-white py-10">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <!-- About Section -->
-            <div>
-                <h4 class="font-bold text-lg mb-4">Tentang Isyara</h4>
-                <p class="text-sm">
-                    Isyara adalah platform belajar Bahasa Isyarat Indonesia yang interaktif. Jelajahi berbagai topik dan
-                    tingkatkan kemampuan berkomunikasi dengan komunitas tuli.
-                </p>
-            </div>
-            <!-- Links Section -->
-            <div>
-                <h4 class="font-bold text-lg mb-4">Tautan Cepat</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="#" class="hover:text-teal-300">Beranda</a></li>
-                    <li><a href="#" class="hover:text-teal-300">Belajar</a></li>
-                    <li><a href="#" class="hover:text-teal-300">Tentang Kami</a></li>
-                    <li><a href="#" class="hover:text-teal-300">Kontak</a></li>
-                </ul>
-            </div>
-            <!-- Contact Section -->
-            <div>
-                <h4 class="font-bold text-lg mb-4">Hubungi Kami</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><i class='bx bx-envelope mr-2'></i>support@isyara.com</li>
-                    <li><i class='bx bx-phone mr-2'></i>+62 812 3456 7890</li>
-                    <li><i class='bx bxl-instagram mr-2'></i>@isyara_id</li>
-                </ul>
-            </div>
-        </div>
-        <div class="mt-8 border-t border-teal-700 pt-4 text-center text-sm">
-            <p>&copy; {{ date('Y') }} Isyara. Semua Hak Dilindungi.</p>
-        </div>
-    </div>
-</footer>
-</body>
-</html>
+</x-home>

@@ -6,3 +6,9 @@
 3. `php artisan migrate`
 4. `php artisan db:seed`
 5. `php artisan storage:link`
+
+## To do
+
+- [ ] Quiz system
+- [ ] Page for each word
+- [ ] Save feature for user

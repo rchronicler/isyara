@@ -7,6 +7,7 @@ use App\Models\Submission;
 use App\Http\Requests\StoreSubmissionRequest;
 use App\Http\Requests\UpdateSubmissionRequest;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 class SubmissionController extends Controller
 {
@@ -117,5 +118,25 @@ class SubmissionController extends Controller
         $search = $request->input('search');
         $submissions = Submission::where('title', 'like', "%$search%")->get();
         return view('detail', compact('submissions'));
+    }
+
+    public function getDictionary(Request $request)
+    {
+        $query = $request->input('q');
+
+        // If there's a search query, filter submissions
+        if ($query) {
+            $submissions = Submission::with(['category', 'user'])
+                ->where('title', 'like', "%{$query}%")
+                ->orWhereHas('category', function ($q) use ($query) {
+                    $q->where('category_name', 'like', "%{$query}%");
+                })
+                ->get();
+        } else {
+            // If no query, fetch all submissions
+            $submissions = Submission::with(['category', 'user'])->get();
+        }
+
+        return view('dictionary.dictionary', compact('submissions'));
     }
 }
