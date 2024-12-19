@@ -52,7 +52,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
                                     {{--                View                    --}}
-                                    <a href="{{ route('submissions.show', $submission) }}"
+                                    <a href="{{ url('/dictionary/'. $submission->entry_id) }}"
                                        class="text-indigo-600 hover:text-indigo-900">
                                         <i class="bx bx-show text-xl"></i> <!-- View Icon -->
                                     </a>
