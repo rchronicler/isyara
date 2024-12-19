@@ -12,13 +12,6 @@
             {{-- Enhanced Search Bar --}}
             <form action="" method="GET" class="max-w-xl mx-auto">
                 <div class="relative shadow-lg">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.817A6 6 0 012 8z"
-                                  clip-rule="evenodd"/>
-                        </svg>
-                    </div>
                     <input type="text" name="q" id="search"
                            class="w-full pl-10 pr-24 py-2 sm:py-3 border-0 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-teal-500 transition duration-300"
                            placeholder="Cari kata atau kategori..." value="{{ request('q') }}">
@@ -41,49 +34,39 @@
                         $spotlightSubmission = $submissions->first();
                     @endphp
                     <div id="spotlight-submission" class="bg-white rounded-xl shadow-lg overflow-hidden">
-                        {{-- Spotlight Video --}}
                         <div class="relative aspect-video">
                             <iframe id="spotlight-iframe"
                                     class="absolute inset-0 w-full h-full"
                                     src="{{ $spotlightSubmission->video_url }}"
                                     title="{{ $spotlightSubmission->title }}"
                                     frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowfullscreen></iframe>
                         </div>
-
-                        {{-- Spotlight Details --}}
                         <div class="p-4 sm:p-6">
-                            <h1 id="spotlight-title" class="text-2xl sm:text-3xl md:text-3xl font-bold text-teal-800 mb-3 sm:mb-4">
+                            <h1 id="spotlight-title" class="text-2xl sm:text-3xl font-bold text-teal-800 mb-3">
                                 {{ $spotlightSubmission->title }}
                             </h1>
-                            <p id="spotlight-description" class="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
+                            <p id="spotlight-description" class="text-sm text-gray-600 mb-3">
                                 {{ $spotlightSubmission->description }}
                             </p>
-
-                            {{-- Metadata --}}
-                            <div class="flex items-center justify-between text-xs sm:text-sm text-gray-500">
-                                <div class="flex items-center space-x-2">
-                                    <span class="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs sm:text-sm">
-                                        {{ $spotlightSubmission->category->category_name }}
-                                    </span>
-                                    <span class="text-gray-400">•</span>
-                                    <span id="spotlight-user">{{ $spotlightSubmission->user->name }}</span>
-                                </div>
+                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                <span id="spotlight-category" class="bg-teal-100 text-teal-800 px-2 py-1 rounded-full">
+                                    {{ $spotlightSubmission->category->category_name }}
+                                </span>
+                                <button type="button"
+                                        id="spotlight-save-button"
+                                        class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition"
+                                        onclick="saveWord({{ $spotlightSubmission->entry_id }})">
+                                    Simpan
+                                </button>
                             </div>
                         </div>
                     </div>
                 @else
-                    {{-- Empty State for Spotlight --}}
-                    <div class="bg-gray-100 p-6 sm:p-8 rounded-xl text-center">
-                        <h3 class="text-2xl sm:text-3xl text-gray-600 mb-3 sm:mb-4">
-                            Belum ada kata yang ditemukan
-                        </h3>
-                        <p class="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">
-                            Mulailah dengan mencari kata atau mendaftarkan kata baru
-                        </p>
+                    <div class="bg-gray-100 p-6 rounded-xl text-center">
+                        <h3 class="text-2xl text-gray-600 mb-3">Belum ada kata yang ditemukan</h3>
                         <a href="{{ route('submissions.create') }}"
-                           class="inline-block bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition duration-300 text-sm sm:text-base">
+                           class="inline-block bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition">
                             Tambah Kata Baru
                         </a>
                     </div>
@@ -92,46 +75,81 @@
 
             {{-- Submissions List (Right) --}}
             <div class="md:col-span-1">
-                <div class="space-y-4">
-                    <h2 class="text-xl sm:text-2xl font-bold text-teal-800 mb-3 sm:mb-4">Daftar Kata</h2>
-                    @foreach($submissions->slice(1) as $submission)
-                        <div
-                            class="submission-item cursor-pointer bg-white rounded-lg shadow-md p-3 sm:p-4 hover:bg-teal-50 transition duration-300 group"
-                            data-video-url="{{ $submission->video_url }}"
-                            data-title="{{ $submission->title }}"
-                            data-description="{{ $submission->description }}"
-                            data-category="{{ $submission->category->category_name }}"
-                            data-user="{{ $submission->user->name }}">
+                <h2 class="text-xl font-bold text-teal-800 mb-4">Daftar Kata</h2>
+                @foreach($submissions->slice(1) as $submission)
+                    <div
+                        class="bg-white rounded-lg shadow-md p-4 mb-4 cursor-pointer hover:shadow-lg transition-all duration-300 submission-item"
+                        data-video-url="{{ $submission->video_url }}"
+                        data-title="{{ $submission->title }}"
+                        data-description="{{ $submission->description }}"
+                        data-category="{{ $submission->category->category_name }}"
+                        data-id="{{ $submission->id }}">
+                        <div class="flex justify-between items-center">
                             <div>
-                                <div class="flex justify-between items-center mb-2">
-                                    <h3 class="text-base sm:text-lg font-semibold text-teal-800 group-hover:text-teal-600 transition">
-                                        {{ $submission->title }}
-                                    </h3>
-                                    <svg class="w-4 sm:w-5 h-4 sm:h-5 text-teal-500 opacity-0 group-hover:opacity-100 transition"
-                                         fill="currentColor"
-                                         viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                              d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                                              clip-rule="evenodd"/>
-                                    </svg>
-                                </div>
-                                <div class="flex justify-between text-xs sm:text-sm text-gray-500">
-                                    <span class="bg-teal-100 text-teal-800 px-2 py-1 rounded-full">
-                                        {{ $submission->category->category_name }}
-                                    </span>
-                                    <span>{{ $submission->user->name }}</span>
-                                </div>
+                                <h3 class="text-lg font-semibold text-teal-800">{{ $submission->title }}</h3>
+                                <span class="text-sm text-gray-500">{{ $submission->category->category_name }}</span>
                             </div>
+                            <button type="button"
+                                    class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition"
+                                    onclick="event.stopPropagation(); saveWord({{ $submission->entry_id }})">
+                                Simpan
+                            </button>
                         </div>
-                    @endforeach
-
-                    @if($submissions->count() <= 1)
-                        <div class="text-center text-xs sm:text-sm text-gray-500 p-4 bg-gray-100 rounded-lg">
-                            Tidak ada kata tambahan untuk ditampilkan
-                        </div>
-                    @endif
-                </div>
+                    </div>
+                @endforeach
+                @if($submissions->count() <= 1)
+                    <div class="text-center text-sm text-gray-500 p-4 bg-gray-100 rounded-lg">
+                        Tidak ada kata tambahan untuk ditampilkan
+                    </div>
+                @endif
             </div>
         </div>
     </section>
+
+    <script>
+        function updateSpotlight(videoUrl, title, description, category, id) {
+            // Update iframe source
+            document.getElementById('spotlight-iframe').src = videoUrl;
+
+            // Update title
+            document.getElementById('spotlight-title').textContent = title;
+
+            // Update description
+            document.getElementById('spotlight-description').textContent = description;
+
+            // Update category
+            document.getElementById('spotlight-category').textContent = category;
+
+            // Update save button
+            document.getElementById('spotlight-save-button').onclick = function () {
+                saveWord(id);
+            };
+
+            // Scroll to spotlight on mobile
+            if (window.innerWidth < 768) {
+                document.getElementById('spotlight-submission').scrollIntoView({behavior: 'smooth'});
+            }
+        }
+
+        function saveWord(entryId) {
+            fetch(`/save-word`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({entry_id: entryId})
+            }).then(response => {
+                if (response.ok) {
+                    alert('Kata berhasil disimpan!');
+                } else {
+                    alert('Gagal menyimpan kata.');
+                    console.log(response);
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Coba lagi.');
+            });
+        }
+    </script>
 </x-home>

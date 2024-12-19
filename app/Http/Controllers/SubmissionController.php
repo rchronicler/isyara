@@ -139,4 +139,10 @@ class SubmissionController extends Controller
 
         return view('dictionary.dictionary', compact('submissions'));
     }
+
+    public function getDictionaryById($entry_id)
+    {
+        $submission = Submission::with(['category', 'user'])->find($entry_id);
+        return view('dictionary.detail', compact('submission'));
+    }
 }

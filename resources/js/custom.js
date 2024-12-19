@@ -15,33 +15,75 @@ window.validateFileSize = validateFileSize;
 
 // For the category guide accordion
 window.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.answer-btn').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
 
-    const submissionItems = document.querySelectorAll('.submission-item');
-    const spotlightIframe = document.getElementById('spotlight-iframe');
-    const spotlightTitle = document.getElementById('spotlight-title');
-    const spotlightDescription = document.getElementById('spotlight-description');
-    const spotlightUser = document.getElementById('spotlight-user');
+            const form = this.closest('form');
+            const formData = new FormData(form);
 
-    submissionItems.forEach(item => {
-        item.addEventListener('click', function () {
-            // Update iframe source
-            spotlightIframe.src = this.dataset.videoUrl;
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const feedbackDiv = document.querySelector('#feedback-container');
+                    feedbackDiv.classList.remove('hidden');
 
-            // Update title
-            spotlightTitle.textContent = this.dataset.title;
-
-            // Update description
-            spotlightDescription.textContent = this.dataset.description;
-
-            // Update category and user
-            const categorySpan = spotlightUser.previousElementSibling;
-            categorySpan.textContent = this.dataset.category;
-            spotlightUser.textContent = this.dataset.user;
-
-            // Optional: Scroll to top of spotlight
-            document.getElementById('spotlight-submission').scrollIntoView({behavior: 'smooth'});
+                    if (data.status === 'correct') {
+                        feedbackDiv.innerHTML = `<div class="correct-answer bg-green-100 text-green-700 p-4 rounded-lg">
+                    <p class="font-medium">${data.message}</p>
+                </div>`;
+                    } else {
+                        feedbackDiv.innerHTML = `<div class="wrong-answer bg-red-100 text-red-700 p-4 rounded-lg">
+                    <p class="font-medium">${data.message}</p>
+                </div>`;
+                    }
+                });
         });
     });
+
+    document.querySelectorAll('.submission-item').forEach(item => {
+        item.addEventListener('click', function () {
+            // Get current spotlight data
+            const spotlightFrame = document.getElementById('spotlight-iframe');
+            const spotlightTitle = document.getElementById('spotlight-title');
+            const spotlightDesc = document.getElementById('spotlight-description');
+            const spotlightCategory = document.querySelector('#spotlight-submission .text-gray-500 span');
+
+            // Store current spotlight data
+            const oldVideoUrl = spotlightFrame.src;
+            const oldTitle = spotlightTitle.textContent;
+            const oldDesc = spotlightDesc.textContent;
+            const oldCategory = spotlightCategory.textContent;
+
+            // Update spotlight with clicked item data
+            spotlightFrame.src = this.dataset.videoUrl;
+            spotlightTitle.textContent = this.dataset.title;
+            spotlightDesc.textContent = this.dataset.description;
+            spotlightCategory.textContent = this.dataset.category;
+
+            // Update clicked item with old spotlight data
+            this.dataset.videoUrl = oldVideoUrl;
+            this.dataset.title = oldTitle;
+            this.dataset.description = oldDesc;
+            this.dataset.category = oldCategory;
+
+            // Update the visible content of the clicked item
+            this.querySelector('h3').textContent = oldTitle;
+            this.querySelector('span').textContent = oldCategory;
+
+            // Optional: Scroll to spotlight on mobile
+            if (window.innerWidth < 768) {
+                document.getElementById('spotlight-submission').scrollIntoView({behavior: 'smooth'});
+            }
+        });
+    });
+
     // Accordion
     const accordionToggle = document.getElementById('accordion-toggle');
     const accordionArrow = document.getElementById('accordion-arrow');

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\UserSavedWordController;
 use App\Models\Category;
 use App\Models\Submission;
 use App\Models\Lesson;
@@ -34,8 +35,17 @@ Route::get('/learn', function () {
 
 Route::get('/learn/{lesson}', [LessonController::class, 'getLessonById'])->name('learn');
 Route::get('/learn/{lesson}/quiz', [LessonController::class, 'getLessonQuizById'])->name('learn');
+Route::post('/learn/{lesson}/quiz/next', [LessonController::class, 'getNextQuiz'])->name('next-quiz');
+Route::post('/check-answer', [LessonController::class, 'checkAnswer'])->name('check-answer');
 
 Route::get('/dictionary', [SubmissionController::class, 'getDictionary'])->name('dictionary');
+Route::get('/dictionary/{entry_id}', [SubmissionController::class, 'getDictionaryById'])->name('dictionary-by-id');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/save-word', [UserSavedWordController::class, 'store'])->name('save-word');
+    Route::get('/saved-words', [UserSavedWordController::class, 'index'])->name('saved-words');
+    Route::delete('/saved-words/{saved_id}', [UserSavedWordController::class, 'destroy'])->name('saved-words.destroy');
+});
 
 // Search returns JSON
 Route::get('/search', function (Request $request) {
